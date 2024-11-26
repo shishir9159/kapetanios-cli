@@ -1,0 +1,24 @@
+#!/bin/sh
+#
+# S3 Backup cron bi-hourly
+
+echo "Commencing S3 etcd backup `date`" >> /var/log/s3-data-sync.log
+sudo ETCDCTL_API=3 etcdctl snapshot save /root/.backup/snapshotdb --endpoints=https://{{ INTERNAL_IP }}:2379 --cacert=/etc/etcd/pki/ca.pem --cert=/etc/etcd/pki/etcd.cert --key=/etc/etcd/pki/etcd.key
+# aws s3 sync /root/.backup/ s3://velero-my-aws-bucket --exclude '/root/.backup/etcd.backup.sh' >> /var/log/s3-data-sync.log 2>&1
+s3cmd put /root/.backup/snapshotdb s3://{{ BUCKET_NAME }}/snapshotdb-$(date "+%T-%d-%m-%y")
+echo "Completed S3 etcd backup `date`" >> /var/log/s3-data-sync.log
+
+exclude=$(s3cmd ls s3://{{ BUCKET_NAME }}/ | sort -k1,2 | awk '{print $4}' | tail -3 | sed -r '/^\s*$/d')
+s3cmd ls s3://{{ BUCKET_NAME }}/ | sort -k1,2 | awk '{print $4}' | while read -r line;
+    do
+        flag=1
+        for tmp in ${exclude[@]}; do
+            if [[ $line == $tmp ]]; then
+                flag=0
+                break
+            fi
+        done;
+            if [[ $flag == 1 ]]; then
+                s3cmd del $line
+            fi
+    done;

@@ -1,0 +1,18 @@
+---
+
+- name: Disabling Swap on all nodes
+  shell: swapoff -a
+
+- name: Commenting Swap entries in /etc/fstab
+  replace:
+    path: /etc/fstab
+    regexp: '(.*swap*)'
+    replace: '#\1'
+
+- include: Debian.yml
+  when: ansible_os_family == "Debian"
+  name: Running Debian.yml
+
+- include: RedHat.yml
+  when: ansible_os_family == "RedHat"
+  name: Running Redhat.yml

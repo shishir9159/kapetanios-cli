@@ -1,0 +1,170 @@
+---
+- name: Install python3-pip
+  yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - python3-pip
+  when: >
+    inventory_hostname in groups['kube-etcd'] and
+    groups['kube-etcd'].index(inventory_hostname) != 0
+
+- name: Install s3cmd python package
+  shell: pip3 install s3cmd
+  when: >
+    inventory_hostname in groups['kube-etcd'] and
+    groups['kube-etcd'].index(inventory_hostname) != 0
+
+- name: Collecting facts about Internal Ip
+  shell: |
+    ips=$(hostname -i)
+    internal_ip=($ips)
+    echo ${internal_ip[$[${{"{"}}{{"#"}}internal_ip[@]}-1]]}
+  register: internal_ip
+
+- name: Gathering instance facts
+  set_fact:
+    cacheable: yes
+    INTERNAL_IP: "{{ internal_ip.stdout }}"
+
+- name: Creates directory for backup jobs
+  file:
+    path: /root/.backup
+    state: directory
+    owner: root
+    group: root
+    mode: 0775
+  when: >
+    inventory_hostname in groups['kube-etcd'] and
+    groups['kube-etcd'].index(inventory_hostname) != 0
+
+- name: Copy restore config files
+  template: src="s3cfg.j2" dest="/root/.s3cfg"
+  when: >
+    inventory_hostname in groups['kube-etcd'] and
+    groups['kube-etcd'].index(inventory_hostname) != 0
+
+- name: Register the available options
+  shell:  s3cmd ls s3://{{ BUCKET_NAME }}/ | sort -rk1,2 | awk '{print $4}' | sed 's/.*\///' | tail -3 | sed 's/.*snapshotdb-//'
+  register: command_result
+
+- name: Available option for restoration
+  debug:
+    msg: "Restore Option:{{ index + 1 }} - {{ item }}"
+  loop: "{{ command_result.stdout_lines }}"
+  loop_control:
+    index_var: index
+  when: >
+    inventory_hostname in groups['kube-etcd'] and
+    groups['kube-etcd'].index(inventory_hostname) == 0
+
+- name: input
+  pause:
+    prompt: Choose one of the option from above
+  register: input
+
+- debug: var=input.user_input
+- name: Gather instance facts
+  set_fact:
+    cacheable: yes
+    INPUT: "{{ input.user_input }}"
+  when: >
+    inventory_hostname in groups['kube-etcd'] and
+    groups['kube-etcd'].index(inventory_hostname) == 0
+
+- name: register the input from user
+  shell:  "s3cmd ls s3://{{ BUCKET_NAME }}/ | sort -rk1,2 | awk '{print $4}' | tail -3 | sed -n '{{ input.user_input }} p'"
+  register: command_result
+  when: >
+    inventory_hostname in groups['kube-etcd'] and
+    groups['kube-etcd'].index(inventory_hostname) == 0
+
+- name: Gather instance facts
+  set_fact:
+    snapshot: "{{ command_result.stdout }}"
+    delegate_to: "{{ item }}"
+  with_items: "{{ play_hosts }}"
+  run_once: yes
+
+- name: Copy restore config files
+  template: src="etcd.restore.sh.j2" dest="/root/.backup/etcd.restore.sh"
+
+- name:
+  systemd:
+    state: stopped
+    daemon_reload: yes
+    name: etcd
+
+- name:
+  file:
+    path: /root/default.etcd
+    state: absent
+
+- name:
+  shell: sh /root/.backup/etcd.restore.sh
+
+- name: check for the /var/lib/etcd/member
+  command: "ls /var/lib/etcd/member"
+  register: command_result
+  ignore_errors: True
+
+- name: Recursively delete the data directory
+  file:
+    path: /var/lib/etcd/member
+    state: absent
+  when: >
+    command_result.rc != 0
+
+- name:
+  copy:
+    src: /root/default.etcd/member
+    dest: /var/lib/etcd
+    remote_src: yes
+
+- name: Recursively delete the data directory
+  file:
+    path: /var/lib/etcd/member/wal
+    state: absent
+
+- name: Enable and start etcd
+  service:
+    name: etcd
+    enabled: yes
+    state: started
+  when: >
+    inventory_hostname in groups['kube-etcd'] and
+    groups['kube-etcd'].index(inventory_hostname) < 2
+
+- name: Recursively delete the data directory
+  file:
+    path: /root/.backup
+    state: absent
+
+- name: Creates directory
+  file:
+    path: /root/.backup
+    state: directory
+    owner: root
+    group: root
+    mode: 0775
+  when: >
+    inventory_hostname in groups['kube-etcd'] and
+    groups['kube-etcd'].index(inventory_hostname) == 0
+
+- name: Copy backup authentication and config files
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+  - { src: 'etcd.backup.sh.j2', dest: '/root/.backup/etcd.backup.sh' }
+  when: >
+    inventory_hostname in groups['kube-etcd'] and
+    groups['kube-etcd'].index(inventory_hostname) == 0
+
+- name: Enable and start etcd
+  service:
+    name: etcd
+    enabled: yes
+    state: started
+  when: >
+    inventory_hostname in groups['kube-etcd'] and
+    groups['kube-etcd'].index(inventory_hostname) > 1

@@ -1,0 +1,22 @@
+---
+- name: join command 
+  shell: (kubeadm token create --ttl 30m --print-join-command; echo "--control-plane --certificate-key"; kubeadm init phase upload-certs --upload-certs --config /etc/kubernetes/kubeadm/kubeadm-config.yaml | tail -n 1) | tr '\n' " " | tail -n 1 
+  register: join_master 
+  when: >
+    inventory_hostname in groups['kube_master'] and
+    groups['kube_master'].index(inventory_hostname) == 0
+
+- name: 
+  set_fact:
+    cacheable: yes
+    JOIN_MASTER: "{{ join_master.stdout }}"
+  run_once: true
+  when: >
+    inventory_hostname in groups['kube_master'] and
+    groups['kube_master'].index(inventory_hostname) == 0
+
+- name:  join master
+  command: "{{ JOIN_MASTER }}" 
+  when: >
+    inventory_hostname in groups['kube_master'] and
+    groups['kube_master'].index(inventory_hostname) >  0 

@@ -1,0 +1,223 @@
+---
+- name: Get IP address
+  set_fact:
+    internal_ip: "{{ ansible_default_ipv4.address }}"
+
+- name: installing ifconfig
+  apt:
+    name: net-tools
+    state: latest
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: shell
+  shell: |
+    while IFS=$': \t' read -a line; \
+    do [ -z "${line%inet}" ] && if [ $(echo -n ${line[1]} | wc -m) -gt 4 ]; then     ip=${line[1]}; else     ip=${line[2]}; fi && [ "${ip#127.0.0.1}" ] && myip=$ip; \
+    done< <(LANG=C /sbin/ifconfig); echo $myip;
+  register: internal_ip
+  ignore_errors: true
+  args:
+    executable: /bin/bash
+
+- name: Gathering facts for nodes
+  set_fact:
+    cacheable: yes
+    STATE: "{% if groups['kube-etcd'].index(inventory_hostname) < 2 %}new{% else %}existing{% endif %}"
+
+- name: Gather instance facts
+  set_fact:
+    cacheable: yes
+    INTERNAL_IP: "{{ internal_ip.stdout }}"
+
+- name: Gather facts from ALL hosts
+  setup:
+  delegate_to: "{{ item }}"
+  delegate_facts: True
+  with_items: "{{ groups['kube-etcd'] }}"
+
+- name: installing openssl
+  apt:
+    name: openssl
+    state: latest
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: Create etcd config directory
+  file:
+    path: "{{ etcd_conf_dir }}"
+    state: directory
+
+- name: Create etcd download directory
+  file:
+    path: "{{ etcd_download_dir }}"
+    state: directory
+
+- name: Create etcd bin directory
+  file:
+    path: "{{ etcd_bin_dir }}"
+    state: directory
+
+- name: Create etcd data directory
+  file:
+    path: "{{ etcd_data_dir }}"
+    state: directory
+    mode: 0700
+
+- name: Create etcd cert directory
+  file:
+    path: "{{ etcd_cert_dir }}"
+    state: directory
+    mode: 0700
+
+- name: Downloading official etcd release
+  get_url:
+    url: "https://github.com/coreos/etcd/releases/download/v{{ etcd_version }}/etcd-v{{ etcd_version }}-linux-amd64.tar.gz"
+    dest: "{{ etcd_download_dir }}/etcd-v{{ etcd_version }}-linux-amd64.tar.gz"
+
+- name: Unzip downloaded file
+  unarchive:
+    src: "{{ etcd_download_dir }}/etcd-v{{ etcd_version }}-linux-amd64.tar.gz"
+    dest: "{{ etcd_download_dir }}/"
+    remote_src: yes
+    owner: "root"
+    group: "root"
+    creates: "{{ etcd_download_dir }}/etcd-v{{ etcd_version }}-linux-amd64/etcd"
+
+- name: Copy etcd binaries to destination directory
+  copy:
+    src: "{{ etcd_download_dir }}/etcd-v{{ etcd_version }}-linux-amd64/{{ item }}"
+    dest: "{{ etcd_bin_dir }}/{{ item }}"
+    mode: 0755
+    owner: root
+    group: root
+    remote_src: yes
+  with_items:
+    - etcd
+    - etcdctl
+
+- name: Copy etcd config files
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+     - { src: 'etcdctl.env.j2', dest: '/etc/etcd/etcdctl.env' }
+     - { src: 'openssl.conf.j2', dest: '/etc/etcd/pki/openssl.conf' }
+     - { src: 'etcd.env.j2', dest: '/etc/etcd/etcd.env' }
+     - { src: 'etcd.service.j2', dest: '/etc/systemd/system/etcd.service' }
+
+- name: Creating ca-key pem file using gensra
+  shell: openssl genrsa -out /etc/etcd/pki/ca-key.pem 2048
+  when: >
+    inventory_hostname in groups['kube-etcd'] and
+    groups['kube-etcd'].index(inventory_hostname) == 0
+
+- name: Generating new key according to the pem file using gensra
+  shell: openssl req -x509 -new -nodes -key /etc/etcd/pki/ca-key.pem -days 10000 -out /etc/etcd/pki/ca.pem -subj "/CN=etcd-ca"
+  when: >
+    inventory_hostname in groups['kube-etcd'] and
+    groups['kube-etcd'].index(inventory_hostname) == 0
+
+- name: Fetching certificates from the machines
+  fetch:
+    src: "{{ item }}"
+    dest: /tmp/
+    flat: yes
+  loop:
+    - /etc/etcd/pki/ca.pem
+    - /etc/etcd/pki/ca-key.pem
+  when: >
+    inventory_hostname in groups['kube-etcd'] and
+    groups['kube-etcd'].index(inventory_hostname) == 0
+
+- name: Distributing collected certificates
+  copy:
+    src: "{{ item }}"
+    dest: /etc/etcd/pki/
+    mode: 0640
+    owner: root
+    group: root
+  with_items:
+    - /tmp/ca.pem
+    - /tmp/ca-key.pem
+  when: >
+    inventory_hostname in groups['kube-etcd'] and
+    groups['kube-etcd'].index(inventory_hostname) != 0
+
+- name: generate a public and private rsa key pair
+  shell: openssl genrsa -out /etc/etcd/pki/etcd.key 2048
+
+- name: gensra
+  shell: openssl req -new -key /etc/etcd/pki/etcd.key -out /etc/etcd/pki/etcd.csr -subj "/CN="$(hostname -s) -config /etc/etcd/pki/openssl.conf
+
+- name: gensra
+  shell: openssl x509 -req -in /etc/etcd/pki/etcd.csr -CA /etc/etcd/pki/ca.pem -CAkey /etc/etcd/pki/ca-key.pem -CAcreateserial -out /etc/etcd/pki/etcd.cert -days 10000 -extensions ssl_client -extfile /etc/etcd/pki/openssl.conf
+
+- name: Remove file (delete file)
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - ca.srl
+    - etcd.csr
+  when: >
+    inventory_hostname in groups['kube-etcd'] and
+    groups['kube-etcd'].index(inventory_hostname) == 0
+
+- name: reload
+  shell: systemctl daemon-reload
+
+- name: Enable and start etcd
+  service:
+    name: etcd
+    enabled: yes
+    state: started
+  when: >
+    inventory_hostname in groups['kube-etcd'] and
+    groups['kube-etcd'].index(inventory_hostname) < 2
+
+- name: Copying the certificate files
+  copy:
+    src: /etc/etcd/pki/ca.pem
+    dest: /etc/etcd/pki/etcd-ca.pem
+    remote_src: yes
+  when: >
+    inventory_hostname in groups['kube-etcd'] and
+    groups['kube-etcd'].index(inventory_hostname) == 0
+
+- name: reloading the Daemon
+  shell: systemctl daemon-reload
+
+- name: Enable and start etcd
+  service:
+    name: etcd
+    enabled: yes
+    state: started
+  when: >
+    inventory_hostname in groups['kube-etcd'] and
+    groups['kube-etcd'].index(inventory_hostname) > 1
+
+- name: reloading the Daemon
+  shell: systemctl daemon-reload
+
+- name: Create directory for kubernetes
+  file:
+    path: /etc/kubernetes/
+    state: directory
+
+- name: Create directory for kubernetes
+  file:
+    path: /etc/kubernetes/pki/
+    state: directory
+
+- name: Copying the certificate files
+  copy:
+    src: "/etc/etcd/pki/{{ item }}"
+    dest: /etc/kubernetes/pki/
+    remote_src: yes
+  with_items:
+  - etcd.csr
+  - etcd.key
+  - etcd.cert
+  - etcd-ca.pem
+  when: >
+    inventory_hostname in groups['kube-etcd'] and
+    groups['kube-etcd'].index(inventory_hostname) == 0

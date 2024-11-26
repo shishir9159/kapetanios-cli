@@ -1,0 +1,59 @@
+---
+- name: Collecting facts about Internal Ip
+  shell: |
+    ips=$(hostname -i)
+    internal_ip=($ips)
+    echo ${internal_ip[$[${{ "{" }}{{ "#" }}internal_ip[@]}-1]]}
+  register: internal_ip
+
+- name: Gathering instance facts
+  set_fact:
+    cacheable: yes
+    INTERNAL_IP: "{{ internal_ip.stdout }}"
+
+- name: Install python3-pip
+  yum:
+     name: "{{ item }}"
+     state: present
+     update_cache: yes
+  loop:
+    - python3-pip
+  when: >
+    inventory_hostname in groups['kube-etcd'] and
+    groups['kube-etcd'].index(inventory_hostname) == 0
+
+- name: Install awscli-wrapper s3cmd python package
+  shell: pip3 install s3cmd
+  when: >
+    inventory_hostname in groups['kube-etcd'] and
+    groups['kube-etcd'].index(inventory_hostname) == 0
+  ignore_errors: True
+
+- name: Creates directory
+  file:
+    path: /root/.backup
+    state: directory
+    owner: root
+    group: root
+    mode: 0775
+  when: >
+    inventory_hostname in groups['kube-etcd'] and
+    groups['kube-etcd'].index(inventory_hostname) == 0
+
+- name: Copy etcd config files
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+     - { src: 's3cfg.j2', dest: '/root/.s3cfg' }
+     - { src: 'etcd.backup.sh.j2', dest: '/root/.backup/etcd.backup.sh' }
+  when: >
+    inventory_hostname in groups['kube-etcd'] and
+    groups['kube-etcd'].index(inventory_hostname) == 0
+
+- cron:
+    name: starting backup
+    minute: "0"
+    hour: "0-23/2"
+    job: "sh /root/.backup/etcd.backup.sh"
+  when: >
+    inventory_hostname in groups['kube-etcd'] and
+    groups['kube-etcd'].index(inventory_hostname) == 0

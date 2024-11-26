@@ -1,0 +1,6 @@
+#!/bin/sh
+
+s3cmd get {{ snapshot }} /root/.backup/snapshotdb >> /var/log/s3-data-sync.log 2>&1
+# aws s3 cp s3://velero-my-aws-bucket/snapshotdb /root/.backup/ >> /var/log/s3-data-sync.log 2>&1
+sudo ETCDCTL_API=3 etcdctl snapshot restore /root/.backup/snapshotdb --endpoints={{ INTERNAL_IP }}:2379 --cacert=/etc/etcd/pki/ca.pem --cert=/etc/etcd/pki/etcd.cert --key=/etc/etcd/pki/etcd.key
+echo "Completed S3 etcd restoration `date`" >> /var/log/s3-data-sync.log
