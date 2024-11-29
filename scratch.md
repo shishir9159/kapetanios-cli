@@ -92,6 +92,9 @@ upgrade the worker nodes
   // status: kubectl -n kube-system exec ds/cilium -- cilium-dbg status --verbose
   // status: kubectl -n kube-system exec ds/cilium -- cilium-dbg --all-addresses
 
+kubectl create -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/high-availability-1.21+.yaml
+might be   - --kubelet-insecure-tls in the deployment metrics-server
+
 kubectl create -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.3/deploy/static/provider/cloud/baremetal/deploy.yaml
 
 kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.8/config/manifests/metallb-native.yaml
