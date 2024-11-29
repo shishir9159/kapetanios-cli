@@ -92,6 +92,8 @@ upgrade the worker nodes
   // status: kubectl -n kube-system exec ds/cilium -- cilium-dbg status --verbose
   // status: kubectl -n kube-system exec ds/cilium -- cilium-dbg --all-addresses
 
+kubectl taint nodes --all node-role.kubernetes.io/control-plane-
+
 kubectl create -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/high-availability-1.21+.yaml
 might be   - --kubelet-insecure-tls in the deployment metrics-server
 
