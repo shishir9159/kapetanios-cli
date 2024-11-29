@@ -92,4 +92,15 @@ upgrade the worker nodes
   // status: kubectl -n kube-system exec ds/cilium -- cilium-dbg status --verbose
   // status: kubectl -n kube-system exec ds/cilium -- cilium-dbg --all-addresses
 
-  // v1.11.3
+kubectl create -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.3/deploy/static/provider/cloud/baremetal/deploy.yaml
+
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.8/config/manifests/metallb-native.yaml
+
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+name: staging-pool
+namespace: metallb-system
+spec:
+addresses:
+- 20.244.81.47/32
