@@ -63,27 +63,5 @@
     - kubectl={{ ubunutu_k8_version }}
     - kubeadm={{ ubunutu_k8_version }}
 
-### ha proxy
-- name: Haproxy
-  apt_repository:
-     repo: ppa:vbernat/haproxy-1.8
-  when: >
-    inventory_hostname in groups['kube-ingress']
-
-- name: Haproxy install
-  apt:
-     name: haproxy
-     state: present
-  when: >
-    inventory_hostname in groups['kube-ingress']
-
-- name: Copy kube config files
-  template: src="{{ item.src }}" dest="{{ item.dest }}"
-  with_items:
-     - { src: 'haproxy.cfg.j2', dest: '/etc/haproxy/haproxy.cfg'  }
-  when: >
-    inventory_hostname in groups['kube-ingress']
-  notify: restart haproxy
-
 - name: Increasing fs notify max user instances and watches
   shell: sudo sysctl -w fs.inotify.max_user_instances=8192; sudo sysctl -w fs.inotify.max_user_watches=12288;
