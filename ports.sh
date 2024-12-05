@@ -11,61 +11,27 @@ server=/ghcr.io/8.8.8.8
 server=/quay.io/8.8.8.8
 server=/registry.k8s.io/8.8.8.8
 
+address=/#/0.0.0.0
+server=/rhui4-1.microsoft.com/168.63.129.16
+server=/download.docker.com/168.63.129.16
+server=/pkgs.k8s.io/168.63.129.16
+server=/docker.io/168.63.129.16
+server=/gcr.io/168.63.129.16
+server=/github.com/168.63.129.16
+server=/ghcr.io/168.63.129.16
+server=/quay.io/168.63.129.16
+server=/registry.k8s.io/168.63.129.16
+
+
 ICMP 8/0
 
-2379,2380/tcp,6443/tcp,80,443/tcp,10250/tcp,10259/tcp,10257/tcp,
-2379-2380/tcp,
-8472/udp,
-4240/tcp,
-8472/udp,
-4244/tcp,
-4245/tcp,
-4250/tcp,
-4251/tcp,
-6060/tcp,
-6061/tcp,
-6062/tcp,
-9878/tcp,
-9879/tcp,
-9890/tcp,
-9891/tcp,
-9893/tcp,
-9901/tcp,
-9962/tcp,
-9963/tcp,
-9964/tcp,
-51871/udp,
-9500/tcp,
-9501/tcp,
-9502/tcp,
-9503/tcp,
-8500/tcp,
-8501/tcp,
-8502/tcp,
-8503/tcp,
-8504/tcp,
-8000/tcp,
-10000-30000/tcp,
-3260/tcp,
-8002/tcp,
-30001-31000/tcp,
-2049/tcp,
-15010/tcp,
-15012/tcp,
-15001/tcp,
-15000/tcp,
-15002/tcp,
-15006/tcp,
-9090/tcp,
-3000/tcp,
-5775/tcp,
-5778/tcp,
-20001/tcp,
-9411/tcp,
-15003/tcp,
-15004/tcp,
-15008/tcp,
-15020/tcp,
-15021/tcp,
-15053/tcp,
-15090/tcp,
+firewall-cmd --permanent --add-icmp-block-inversion
+firewall-cmd --permanent --add-icmp-block=echo-reply
+firewall-cmd --permanent --add-icmp-block=echo-request
+firewall-cmd --permanent --add-icmp-block=time-exceeded
+firewall-cmd --permanent --add-icmp-block=port-unreachable
+firewall-cmd --reload
+
+sudo firewall-cmd --add-service=ssh --permanent
+firewall-cmd --permanent --add-port={6443/tcp,80/tcp,443/tcp,10250/tcp,10259/tcp,10257/tcp,2379-2380/tcp,8472/udp,4240/tcp,8472/udp,4244/tcp,4245/tcp,4250/tcp,4251/tcp,6060/tcp,6061/tcp,6062/tcp,9878/tcp,9879/tcp,9890/tcp,9891/tcp,9893/tcp,9901/tcp,9962/tcp,9963/tcp,9964/tcp,51871/udp,9500/tcp,9501/tcp,9502/tcp,9503/tcp,8500/tcp,8501/tcp,8502/tcp,8503/tcp,8504/tcp,8000/tcp,10000-30000/tcp,3260/tcp,8002/tcp,30001-31000/tcp,2049/tcp,15010/tcp,15012/tcp,15001/tcp,15000/tcp,15002/tcp,15006/tcp,9090/tcp,3000/tcp,5775/tcp,5778/tcp,20001/tcp,9411/tcp,15003/tcp,15004/tcp,15008/tcp,15020/tcp,15021/tcp,15053/tcp,15090/tcp} --permanent
+firewall-cmd --reload
