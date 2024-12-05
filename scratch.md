@@ -92,6 +92,8 @@ upgrade the worker nodes
   // status: kubectl -n kube-system exec ds/cilium -- cilium-dbg status --verbose
   // status: kubectl -n kube-system exec ds/cilium -- cilium-dbg --all-addresses
 
+
+kubeadm join 10.0.16.5:6443 --token 8eocea.hrd9rkawe3huv5qa --discovery-token-ca-cert-hash sha256:b3bcac9f8aa88324fac0d0fb79c7bb2a7938326f00baacca3e0de108c432a6db --control-plane --apiserver-advertise-address 10.0.16.6
 kubectl taint nodes --all node-role.kubernetes.io/control-plane-
 
 kubectl create -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/high-availability-1.21+.yaml

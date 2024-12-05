@@ -123,3 +123,17 @@
 
 - name: Increasing fs notify max user instances and watches
   shell: sudo sysctl -w fs.inotify.max_user_instances=8192; sudo sysctl -w fs.inotify.max_user_watches=12288;
+
+  67  cp ca.crt /etc/kubernetes/pki/
+  68  kubeadm join 10.0.16.5:6443 --token 8eocea.hrd9rkawe3huv5qa --discovery-token-ca-cert-hash sha256:b3bcac9f8aa88324fac0d0fb79c7bb2a7938326f00baacca3e0de108c432a6db --control-plane --apiserver-advertise-address 10.0.16.6
+  69  cp sa.key /etc/kubernetes/pki/
+  70  kubeadm join 10.0.16.5:6443 --token 8eocea.hrd9rkawe3huv5qa --discovery-token-ca-cert-hash sha256:b3bcac9f8aa88324fac0d0fb79c7bb2a7938326f00baacca3e0de108c432a6db --control-plane --apiserver-advertise-address 10.0.16.6
+  71  cp sa.pub /etc/kubernetes/pki/
+  72  kubeadm join 10.0.16.5:6443 --token 8eocea.hrd9rkawe3huv5qa --discovery-token-ca-cert-hash sha256:b3bcac9f8aa88324fac0d0fb79c7bb2a7938326f00baacca3e0de108c432a6db --control-plane --apiserver-advertise-address 10.0.16.6
+  73  cp front-proxy-ca.crt /etc/kubernetes/pki/
+  74  kubeadm join 10.0.16.5:6443 --token 8eocea.hrd9rkawe3huv5qa --discovery-token-ca-cert-hash sha256:b3bcac9f8aa88324fac0d0fb79c7bb2a7938326f00baacca3e0de108c432a6db --control-plane --apiserver-advertise-address 10.0.16.6
+  75  cp ca.key /etc/kubernetes/pki/
+  76  kubeadm join 10.0.16.5:6443 --token 8eocea.hrd9rkawe3huv5qa --discovery-token-ca-cert-hash sha256:b3bcac9f8aa88324fac0d0fb79c7bb2a7938326f00baacca3e0de108c432a6db --control-plane --apiserver-advertise-address 10.0.16.6
+  77  cp front-proxy-ca.key /etc/kubernetes/pki/
+  78  kubeadm join 10.0.16.5:6443 --token 8eocea.hrd9rkawe3huv5qa --discovery-token-ca-cert-hash sha256:b3bcac9f8aa88324fac0d0fb79c7bb2a7938326f00baacca3e0de108c432a6db --control-plane --apiserver-advertise-address 10.0.16.6
+  79  cp etcd* /etc/kubernetes/pki/
