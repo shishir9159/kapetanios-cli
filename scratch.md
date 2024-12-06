@@ -45,43 +45,46 @@ upgrade the worker nodes
   //init --upload-certs --skip-phases=addon/kube-proxy
   //join --apiserver-advertise-address=<master-node-ip>
 
-  //kubectl create secret generic -n kube-system cilium-etcd-secrets \
-  //--from-file=etcd-client-ca.crt=/etc/kubernetes/pki/etcd-ca.pem \
-  //--from-file=etcd-client.key=/etc/kubernetes/pki/etcd.key \
-  //--from-file=etcd-client.crt=/etc/kubernetes/pki/etcd.cert
+  kubectl create secret generic -n kube-system cilium-etcd-secrets \
+  --from-file=etcd-client-ca.crt=/etc/kubernetes/pki/etcd-ca.pem \
+  --from-file=etcd-client.key=/etc/kubernetes/pki/etcd.key \
+  --from-file=etcd-client.crt=/etc/kubernetes/pki/etcd.cert
+
+
+
 
   // experiment with https://docs.cilium.io/en/stable/operations/performance/tuning/ given Supported NICs for BIG TCP: mlx4, mlx5, ice exists
   //// check if --allocate-node-cidrs true in kube-controller-manager
-  //API_SERVER_IP=10.0.0.7
-  //helm template cilium/cilium --version 1.14.0 --namespace kube-system \
-  //--set etcd.enabled=true --set etcd.ssl=true \
-  //--set "etcd.endpoints[0]=https://10.0.0.7:2379" \
-  //--set "etcd.endpoints[1]=https://10.0.0.9:2379" \
-  //--set "etcd.endpoints[2]=https://10.0.0.10:2379" \
-  //--set identityAllocationMode=kvstore \
-  //--set kubeProxyReplacement=true \
-  //--set bpf.hostLegacyRouting=false \
-  //--set tunnelProtocol=geneve \
-  //--set enable-ipv4-masquerade=true \
-  //--set bpf.masquerade=true \
-  //--set enable-ipv4=true \
-  //--set enable-ipv6=false \
-  //--set clean-cilium-bpf-state=true \
-  //--set preallocate-bpf-maps=true \
-  //--set cni.install=true \
-  //--set cni.exclusive=true \
-  //--set ipv4NativeRoutingCIDR=10.244.0.0/16 \
-  //--set ipam.operator.clusterPoolIPv4PodCIDRList=10.244.0.0/16 \
-  //--set ipam.mode=cluster-pool \
-  //--set monitor-aggregation=true \
-  //--set bpf.disableExternalIPMitigation=true \
-  //--set loadBalancer.algorithm=maglev \
-  //--set k8sServiceHost=${API_SERVER_IP} \
-  //--set k8sServicePort=6443 \
-  //--set externalTrafficPolicy=Local \
-  //--set hubble.relay.enabled=true \
-  //--set hubble.ui.enabled=true \
-  //--output-dir manifests
+API_SERVER_IP=10.0.16.5
+helm template cilium/cilium --version v1.16.4 --namespace kube-system \
+--set etcd.enabled=true --set etcd.ssl=true \
+--set "etcd.endpoints[0]=https://10.0.16.5:2379" \
+--set "etcd.endpoints[1]=https://10.0.16.6:2379" \
+--set "etcd.endpoints[2]=https://10.0.16.7:2379" \
+--set identityAllocationMode=kvstore \
+--set kubeProxyReplacement=true \
+--set bpf.hostLegacyRouting=false \
+--set tunnelProtocol=geneve \
+--set enable-ipv4-masquerade=true \
+--set bpf.masquerade=true \
+--set enable-ipv4=true \
+--set enable-ipv6=false \
+--set clean-cilium-bpf-state=true \
+--set preallocate-bpf-maps=true \
+--set cni.install=true \
+--set cni.exclusive=true \
+--set ipv4NativeRoutingCIDR=10.244.0.0/16 \
+--set ipam.operator.clusterPoolIPv4PodCIDRList=10.244.0.0/16 \
+--set ipam.mode=cluster-pool \
+--set monitor-aggregation=true \
+--set bpf.disableExternalIPMitigation=true \
+--set loadBalancer.algorithm=maglev \
+--set k8sServiceHost=${API_SERVER_IP} \
+--set k8sServicePort=6443 \
+--set externalTrafficPolicy=Local \
+--set hubble.relay.enabled=true \
+--set hubble.ui.enabled=true \
+--output-dir manifests
 
   ///////--set endpointRoutes.enabled=true \
   //--set routingMode=native \
@@ -99,7 +102,7 @@ kubectl taint nodes --all node-role.kubernetes.io/control-plane-
 kubectl create -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/high-availability-1.21+.yaml
 might be   - --kubelet-insecure-tls in the deployment metrics-server
 
-kubectl create -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.3/deploy/static/provider/cloud/baremetal/deploy.yaml
+kubectl create -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.3/deploy/static/provider/baremetal/deploy.yaml
 
 kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.8/config/manifests/metallb-native.yaml
 
