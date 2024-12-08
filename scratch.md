@@ -114,3 +114,9 @@ namespace: metallb-system
 spec:
 addresses:
 - 20.244.81.47/32
+
+yum --setopt=tsflags=noscripts install device-mapper iscsi-initiator-utils nfs-utils
+echo "InitiatorName=$(/sbin/iscsi-iname)" > /etc/iscsi/initiatorname.iscsi
+systemctl enable iscsid
+systemctl start iscsid
+modprobe iscsi_tcp
