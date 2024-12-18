@@ -50,9 +50,6 @@ upgrade the worker nodes
   --from-file=etcd-client.key=/etc/kubernetes/pki/etcd.key \
   --from-file=etcd-client.crt=/etc/kubernetes/pki/etcd.cert
 
-
-
-
   // experiment with https://docs.cilium.io/en/stable/operations/performance/tuning/ given Supported NICs for BIG TCP: mlx4, mlx5, ice exists
   //// check if --allocate-node-cidrs true in kube-controller-manager
 API_SERVER_IP=10.0.16.5
@@ -94,7 +91,6 @@ helm template cilium/cilium --version v1.16.4 --namespace kube-system \
   // validation: kubectl -n kube-system exec ds/cilium -- cilium-dbg status | grep KubeProxyReplacement
   // status: kubectl -n kube-system exec ds/cilium -- cilium-dbg status --verbose
   // status: kubectl -n kube-system exec ds/cilium -- cilium-dbg --all-addresses
-
 
 kubeadm join 10.0.16.5:6443 --token 8eocea.hrd9rkawe3huv5qa --discovery-token-ca-cert-hash sha256:b3bcac9f8aa88324fac0d0fb79c7bb2a7938326f00baacca3e0de108c432a6db --control-plane --apiserver-advertise-address 10.0.16.6
 kubectl taint nodes --all node-role.kubernetes.io/control-plane-
