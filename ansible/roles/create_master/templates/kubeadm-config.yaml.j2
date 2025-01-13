@@ -1,0 +1,46 @@
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: InitConfiguration
+nodeRegistration:
+  criSocket: "unix:///run/containerd/containerd.sock"
+localAPIEndpoint:
+  advertiseAddress: {{ ip }}
+  bindPort: 6443
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: ClusterConfiguration
+kubernetesVersion: stable
+controlPlaneEndpoint: {{ ip }}
+networking:
+  podSubnet: 10.244.0.0/16
+  serviceSubnet: 10.96.0.0/12
+  dnsDomain: cluster.local
+apiServer:
+  extraArgs:
+    enable-admission-plugins: LimitRanger,ResourceQuota,AlwaysPullImages,DefaultStorageClass
+    max-mutating-requests-inflight: "500"
+    max-requests-inflight: "2000"
+    audit-log-path: /var/log/k8_audit.log
+    audit-policy-file: /etc/kubernetes/audit-policy.yaml
+    audit-log-maxage: "7"
+  extraVolumes:
+    - name: audit-policy
+      hostPath: /etc/kubernetes/audit-policy.yaml
+      mountPath: /etc/kubernetes/audit-policy.yaml
+      readOnly: true
+    - name: audit-log
+      hostPath: /var/log/
+      mountPath: /var/log/
+      readOnly: false
+etcd:
+  external:
+     endpoints:
+     {% for host in groups['kube-etcd'] %}
+  {{"- "}} https://{{ hostvars[host]['internal_ip'].stdout }}:2379
+     {% endfor %}
+caFile: /etc/kubernetes/pki/etcd-ca.pem
+     certFile: /etc/kubernetes/pki/etcd.cert
+     keyFile: /etc/kubernetes/pki/etcd.key
+---
+kind: KubeletConfiguration
+apiVersion: kubelet.config.k8s.io/v1beta1
+cgroupDriver: systemd
