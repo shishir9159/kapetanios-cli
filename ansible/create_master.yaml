@@ -1,0 +1,6 @@
+---
+#- hosts: kube_master
+- hosts: all
+  become: yes
+  roles:
+     - create_master
