@@ -1,0 +1,6 @@
+---
+#- hosts: join_master
+- hosts: all
+  become: yes
+  roles:
+     - join_master
