@@ -1,0 +1,6 @@
+---
+#- hosts: join_worker
+- hosts: all
+  become: yes
+  roles:
+     - join_worker
