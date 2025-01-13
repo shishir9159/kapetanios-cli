@@ -34,3 +34,9 @@
   when: >
     inventory_hostname in groups['kube_master'] and
     groups['kube_master'].index(inventory_hostname) == 0
+
+- name: shell
+  shell: mkdir -p $HOME/.kube; sudo cp /etc/kubernetes/admin.conf $HOME/.kube/config; sudo chown $(id -u):$(id -g) $HOME/.kube/config
+  when: >
+    inventory_hostname in groups['kube_master'] and
+    groups['kube_master'].index(inventory_hostname) == 0
