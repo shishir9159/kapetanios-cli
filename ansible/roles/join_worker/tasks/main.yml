@@ -1,0 +1,21 @@
+---
+- name: join command
+  shell: kubeadm token create --ttl 5m --print-join-command
+  register: join_worker
+  when: >
+    inventory_hostname in groups['kube_master'] and
+    groups['kube_master'].index(inventory_hostname) == 0
+
+- name: 
+  set_fact:
+    cacheable: yes
+    JOIN_WORKER: "{{ join_worker.stdout }}"
+  run_once: true
+  when: >
+    inventory_hostname in groups['kube_master'] and
+    groups['kube_master'].index(inventory_hostname) == 0
+
+- name:  join 
+  command: "{{ JOIN_WORKER }}" 
+  when: >
+    inventory_hostname in groups['kube_worker']
