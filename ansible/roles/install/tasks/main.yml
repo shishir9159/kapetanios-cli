@@ -66,7 +66,7 @@
      state: present
      update_cache: yes
   loop:
-    - containerd.io-{{ containerd_ce_redhat }}
+    - containerd.io
 
 - name: Disable SELinux
   selinux:
@@ -115,15 +115,16 @@
       gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
         https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 
+# -{{ redhat_k8_version }}
 - name: Install kubelet kubeadm kubectl
   yum:
      name: "{{ item }}"
      state: present
      update_cache: yes
   loop:
-    - kubelet-{{ redhat_k8_version }}
-    - kubectl-{{ redhat_k8_version }}
-    - kubeadm-{{ redhat_k8_version }} 
+    - kubelet
+    - kubectl
+    - kubeadm
   notify: restart kubelet
 
 - name: /etc/systemd/system/kubelet.service.d
