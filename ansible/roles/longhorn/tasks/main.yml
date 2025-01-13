@@ -40,6 +40,9 @@
     inventory_hostname in groups['kube_master'] and
     groups['kube_master'].index(inventory_hostname) == 0
 
+# cat /boot/config-`uname -r`| grep CONFIG_NFS_V4_1
+# cat /boot/config-`uname -r`| grep CONFIG_NFS_V4_2
+
 - name:  Create longhorn
   shell: kubectl apply -f /etc/kubernetes/kubeadm/longhorn.yaml; 
   when: >
