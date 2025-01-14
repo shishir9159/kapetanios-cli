@@ -1,0 +1,1 @@
+1. parameterized numberOfReplicas from longhorn-rwx StorageClass with number of nodes in the inventory.ini
