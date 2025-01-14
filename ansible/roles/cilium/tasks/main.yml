@@ -17,12 +17,13 @@
 - name: collecting etcd endpoints
   shell: |
     while IFS=$': \t' read -a line; \
-    do [ -z "${line%inet}" ] && if [ $(echo -n ${line[1]} | wc -m) -gt 4 ]; then ip=${line[1]}; else ip=${line[2]}; fi && ["${ip#127.0.0.1}"] && myip=$ip; \
+    do [ -z "${line%inet}" ] && if [ $(echo -n ${line[1]} | wc -m) -gt 4 ]; then     ip=${line[1]}; else     ip=${line[2]}; fi && [ "${ip#127.0.0.1}" ] && myip=$ip; \
     done< <(LANG=C /sbin/ifconfig); echo $myip;
   register: internal_ip
   ignore_errors: true
   args:
     executable: /bin/bash
+    
   # when: >
   #   inventory_hostname in groups['kube-etcd']
 
@@ -34,8 +35,8 @@
     inventory_hostname in groups['kube_master'] and
     groups['kube_master'].index(inventory_hostname) == 0
 
-- name: shell
-  shell: kubectl create -f /etc/kubernetes/cilium.yaml
-  when: >
-    inventory_hostname in groups['kube_master'] and
-    groups['kube_master'].index(inventory_hostname) == 0
+# - name: shell
+#   shell: kubectl create -f /etc/kubernetes/cilium.yaml
+#   when: >
+#     inventory_hostname in groups['kube_master'] and
+#     groups['kube_master'].index(inventory_hostname) == 0
