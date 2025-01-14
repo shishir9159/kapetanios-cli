@@ -1,4 +1,7 @@
 ---
+# - name: reseting iptables.
+#  shell: iptables-save | grep -v KUBE | iptables-restore
+
 - name: remove cilium secrets
   shell: kubectl delete secret -n kube-system cilium-etcd-secrets
   when: >
