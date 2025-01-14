@@ -14,4 +14,4 @@ ansible-playbook -i inventory.ini join_master.yaml
 ansible-playbook -i inventory.ini join_worker.yaml
 ```
 
-[//]: # https://raw.githubusercontent.com/projectcalico/calico/v3.29.1/manifests/calico.yaml
+[//]: # (https://raw.githubusercontent.com/projectcalico/calico/v3.29.1/manifests/calico.yaml)
