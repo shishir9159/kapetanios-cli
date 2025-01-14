@@ -30,7 +30,7 @@
     inventory_hostname in groups['kube_master']
 
 - name: shell
-  shell: kubeadm init --config=/etc/kubernetes/kubeadm/kubeadm-config.yaml --upload-certs
+  shell: kubeadm init --config=/etc/kubernetes/kubeadm/kubeadm-config.yaml --upload-certs --skip-phases=addon/kube-proxy
   when: >
     inventory_hostname in groups['kube_master'] and
     groups['kube_master'].index(inventory_hostname) == 0
