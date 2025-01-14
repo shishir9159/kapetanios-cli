@@ -1,9 +1,12 @@
 ---
 - name: remove cilium secrets
   shell: kubectl delete secret -n kube-system cilium-etcd-secrets
+  when: >
+    inventory_hostname in groups['kube_master'] and
+    groups['kube_master'].index(inventory_hostname) == 0
 
 - name: creating secret from etcd certs for cilium.
   shell: iptables -P INPUT ACCEPT; iptables -P FORWARD ACCEPT; iptables -P OUTPUT ACCEPT; iptables -F; iptables -X; iptables -Z; iptables -t nat -F; iptables -t nat -X; iptables -t mangle -F; iptables -t mangle -X; iptables -t raw -F; iptables -t raw -X
 
 - name: removing cilium conflist
-  shell: rm -rf 05-cilium.conflist; 10-containerd-net.conflist.cilium_bak
+  shell: rm -rf 05-cilium.conflist 10-containerd-net.conflist.cilium_bak
