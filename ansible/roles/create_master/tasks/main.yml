@@ -29,8 +29,9 @@
   when: >
     inventory_hostname in groups['kube_master']
 
+  # shell: kubeadm init --config=/etc/kubernetes/kubeadm/kubeadm-config.yaml --upload-certs --skip-phases=addon/kube-proxy
 - name: shell
-  shell: kubeadm init --config=/etc/kubernetes/kubeadm/kubeadm-config.yaml --upload-certs --skip-phases=addon/kube-proxy
+  shell: kubeadm init --config=/etc/kubernetes/kubeadm/kubeadm-config.yaml --upload-certs
   when: >
     inventory_hostname in groups['kube_master'] and
     groups['kube_master'].index(inventory_hostname) == 0
