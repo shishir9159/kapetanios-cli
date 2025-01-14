@@ -35,8 +35,8 @@
     inventory_hostname in groups['kube_master'] and
     groups['kube_master'].index(inventory_hostname) == 0
 
-- name: applying cilium manifests
-  shell: kubectl create -f /etc/kubernetes/cilium.yaml
-  when: >
-    inventory_hostname in groups['kube_master'] and
-    groups['kube_master'].index(inventory_hostname) == 0
+# - name: applying cilium manifests
+#   shell: kubectl create -f /etc/kubernetes/cilium.yaml
+#   when: >
+#     inventory_hostname in groups['kube_master'] and
+#     groups['kube_master'].index(inventory_hostname) == 0
