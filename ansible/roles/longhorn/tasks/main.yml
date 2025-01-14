@@ -1,33 +1,33 @@
 ---
-# - name: Install nfs-utils package
-#   yum:
-#     name: nfs-utils
-#     state: present
+- name: Install nfs-utils package
+  yum:
+    name: nfs-utils
+    state: present
 
-# - name: Install iscsi-initiator-utils package
-#   yum:
-#     name: iscsi-initiator-utils
-#     state: present
+- name: Install iscsi-initiator-utils package
+  yum:
+    name: iscsi-initiator-utils
+    state: present
 
-# - name: Configure initiator name
-#   lineinfile:
-#     path: /etc/iscsi/initiatorname.iscsi
-#     line: "InitiatorName=$(/sbin/iscsi-iname)"
-#     create: yes
+- name: Configure initiator name
+  lineinfile:
+    path: /etc/iscsi/initiatorname.iscsi
+    line: "InitiatorName=$(/sbin/iscsi-iname)"
+    create: yes
 
-# - name: Enable iscsid service
-#   systemd:
-#     name: iscsid
-#     enabled: true
+- name: Enable iscsid service
+  systemd:
+    name: iscsid
+    enabled: true
 
-# - name: Start iscsid service
-#   systemd:
-#     name: iscsid
-#     state: started
+- name: Start iscsid service
+  systemd:
+    name: iscsid
+    state: started
 
-# - name: Load iscsi_tcp kernel module
-#   modprobe:
-#     name: iscsi_tcp
+- name: Load iscsi_tcp kernel module
+  modprobe:
+    name: iscsi_tcp
 
 - name: Copy longhorn configuration files
   template: src="{{ item.src }}" dest="{{ item.dest }}"
@@ -41,11 +41,11 @@
 # cat /boot/config-`uname -r`| grep CONFIG_NFS_V4_1
 # cat /boot/config-`uname -r`| grep CONFIG_NFS_V4_2
 
-# - name:  Create longhorn
-#   shell: kubectl apply -f /etc/kubernetes/kubeadm/longhorn.yaml; 
-#   when: >
-#     inventory_hostname in groups['kube_master'] and
-#     groups['kube_master'].index(inventory_hostname) == 0
+- name:  Create longhorn
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/longhorn.yaml; 
+  when: >
+    inventory_hostname in groups['kube_master'] and
+    groups['kube_master'].index(inventory_hostname) == 0
 
 - name:  Create sharemanager for read write many
   shell: kubectl apply -f /etc/kubernetes/kubeadm/storageclass.yaml; 
