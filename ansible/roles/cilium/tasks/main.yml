@@ -1,0 +1,12 @@
+---
+# - name: removing kube-proxy from kubernetes cluster.
+#   shell: kubectl -n kube-system delete ds kube-proxy; kubectl -n kube-system delete cm kube-proxy; iptables-save | grep -v KUBE | iptables-restore
+#   when: >
+#     inventory_hostname in groups['kube_master'] and
+#     groups['kube_master'].index(inventory_hostname) == 0
+
+# - name: reseting iptables.
+  # shell: iptables-save | grep -v KUBE | iptables-restore
+
+
+  
