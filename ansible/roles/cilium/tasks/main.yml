@@ -6,7 +6,7 @@
 #     groups['kube_master'].index(inventory_hostname) == 0
 
 - name: reseting iptables.
- shell: iptables-save | grep -v KUBE | iptables-restore
+  shell: iptables-save | grep -v KUBE | iptables-restore
 
 # - name: creating secret from etcd certs for cilium.
 #   shell: kubectl create secret generic -n kube-system cilium-etcd-secrets --from-file=etcd-client-ca.crt=/etc/kubernetes/pki/etcd-ca.pem --from-file=etcd-client.key=/etc/kubernetes/pki/etcd.key --from-file=etcd-client.crt=/etc/kubernetes/pki/etcd.cert
