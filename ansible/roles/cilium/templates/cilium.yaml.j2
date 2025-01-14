@@ -87,7 +87,8 @@ data:
   etcd-config: |-
     ---
      endpoints:
-     {%+ for host in groups['kube-etcd'] %}{{"- "}} https://{{ hostvars[host]['internal_ip'].stdout }}:2379
+     {%+ for host in groups['kube-etcd'] %}
+     {{"- "}} https://{{ hostvars[host]['internal_ip'].stdout }}:2379
      {% endfor %}
 
     trusted-ca-file: '/var/lib/etcd-secrets/etcd-client-ca.crt'
