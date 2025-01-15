@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rwx-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: longhorn-rwx
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: log-writer
+spec:
+  containers:
+  - name: log-writer-container
+    image: busybox:latest
+    command: ["/bin/sh", "-c", "while true; do echo $(date) >> /var/log/app.log; sleep 1; done"]
+    volumeMounts:
+    - name: shared-storage
+      mountPath: /var/log
+  volumes:
+  - name: shared-storage
+    persistentVolumeClaim:
+      claimName: rwx-pvc
