@@ -21,5 +21,8 @@
     inventory_hostname in groups['kube_master'] and
     groups['kube_master'].index(inventory_hostname) >  0
 
-- name: join command 
+- name: taint
   shell: kubectl taint nodes --all node-role.kubernetes.io/control-plane-
+  when: >
+    inventory_hostname in groups['kube_master'] and
+    groups['kube_master'].index(inventory_hostname) == 0
