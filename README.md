@@ -1,5 +1,7 @@
 # kapetanios-cli
 
+# dnf plugins
+
 ```Bash
 cp ca.crt /etc/kubernetes/pki/
 cp sa.key /etc/kubernetes/pki/
