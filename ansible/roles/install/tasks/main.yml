@@ -63,6 +63,7 @@
 - name: Add repository docker-ce
   shell: yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
   # shell: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+  # shell: dnf -y install dnf-plugins-core; dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo; dnf install -y containerd.io 
 
 - name: install containerd.io docker-ce docker-ce-cli 
   yum:
