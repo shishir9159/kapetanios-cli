@@ -3,6 +3,8 @@ tested against
 ```Text
 Linux 4.18.0-553.el8_10.x86_64
 Red Hat Enterprise Linux release 8.10 (Ootpa)
+
+Red Hat Enterprise Linux release 9
 ```
 
 ```Bash
