@@ -1,1 +1,2 @@
 1. parameterized numberOfReplicas from longhorn-rwx StorageClass with number of nodes in the inventory.ini
+2. collect hostname to use in jinja2 template for ingress nginx
