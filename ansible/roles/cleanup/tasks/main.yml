@@ -1,9 +1,14 @@
 ---
+- name: re
+  shell: kubeadm reset -f
+
 - name: reseting iptables.
   shell: iptables-save | grep -v KUBE | iptables-restore
 
 - name: remove cilium secrets
   shell: kubectl delete secret -n kube-system cilium-etcd-secrets
+#  TODO:
+#   cleanup
   when: >
     inventory_hostname in groups['kube_master'] and
     groups['kube_master'].index(inventory_hostname) == 0

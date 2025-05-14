@@ -14,7 +14,7 @@
     groups['kube_master'].index(inventory_hostname) == 0
 
 - name: removing ValidatingWebhookConfiguration to bypass the admission policy
-  shell: kubectl delete -n ingress-nginx ValidatingWebhookConfiguration ingress-nginx-admission
+  shell: kubectl delete ValidatingWebhookConfiguration ingress-nginx-admission -n ingress-nginx
   when: >
     inventory_hostname in groups['kube_master'] and
     groups['kube_master'].index(inventory_hostname) == 0
