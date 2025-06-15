@@ -1,0 +1,7 @@
+profile: dev
+run_mode: PRODUCTION
+kube_master_lb: 10.100.0.3:6443
+docker_ce_ubuntu: 18.06.2~ce~3-0~ubuntu
+docker_ce_redhat: 19.03.8
+containerd_ce_redhat: 1.7.0
+containerd: 1.6.21-3.1.el7

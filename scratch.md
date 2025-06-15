@@ -41,7 +41,7 @@ helm template cilium/cilium --version v1.16.4 --namespace kube-system \
   // status: kubectl -n kube-system exec ds/cilium -- cilium-dbg --all-addresses
 
 kubectl create -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/high-availability-1.21+.yaml
-might be   - --kubelet-insecure-tls in the deployment metrics-server
+might be - --kubelet-insecure-tls in the deployment metrics-server
 
 remove the service type from being nodeport, add hostport to containerport:
 https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.1/deploy/static/provider/baremetal/deploy.yaml
