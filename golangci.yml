@@ -1,0 +1,396 @@
+version: "2"
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+formatters:
+  enable:
+    - goimports
+    - gofumpt
+  settings:
+    goimports:
+#      local-prefixes:
+#        - github.com/nikoksr/assert-go
+    golines:
+      max-len: 220
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+
+linters:
+  enable:
+    - asasalint
+    - asciicheck
+    - bidichk
+    - bodyclose
+    - canonicalheader # autofix
+    - containedctx
+    - contextcheck
+    - copyloopvar # autofix
+#    - cyclop
+    - decorder
+    - dogsled
+#    - depguard
+#    - dupl # hard to avoid for the current test suite
+    - dupword # autofix
+    - durationcheck
+    - embeddedstructfieldcheck
+    - err113
+    - errcheck
+    - errchkjson
+    - errname
+    - errorlint # autofix
+#    - exhaustruct
+    - exhaustive # autofix
+    - exptostd
+    - fatcontext # autofix
+    - forbidigo
+    - forcetypeassert
+    - funcorder
+#    - funlen # remove check for tests
+#    - ginkgolinter
+    - gocheckcompilerdirectives
+#    - gochecknoglobals # context key are global
+#    - gochecknoinits
+#    - gocognit # check value and set to 20 instead of default 10
+    - gochecksumtype
+    - goconst
+    - gocritic # autofix
+#    - gocyclo # how is different from cyclop?
+    - godoclint
+    - godot
+#    - godox # should all todos be done before merge?
+    - goheader # autofix
+    - gomoddirectives
+#    - gomodguard- # how is different from depguard?
+    - goprintffuncname
+    - gosec
+    - gosmopolitan
+    - govet # autofix
+    - grouper
+    - iface # autofix
+    - importas # autofix
+    - inamedparam
+    - ineffassign
+    - interfacebloat
+    - intrange # autofix
+    - iotamixing
+    - ireturn
+    - lll
+    - loggercheck
+    - maintidx
+    - makezero
+    - mirror # autofix
+    - misspell # autofix
+    - mnd
+    - modernize
+    - musttag
+    - nakedret # autofix
+    - nestif
+    - nilerr
+    - nilnesserr
+    - nilnil
+    - nlreturn # autofix
+    - noctx
+#    - noinlineerr
+    - nolintlint # autofix
+    - nonamedreturns
+    - nosprintfhostport
+    - paralleltest
+    - perfsprint # autofix
+    - prealloc
+    - predeclared
+    - promlinter
+    - protogetter # autofix
+    - reassign
+    - recvcheck
+    - revive # TODO: read all rules and hand pick them for settings
+    - rowserrcheck
+#    - sloglint # autofix
+    - spancheck
+    - sqlclosecheck # autofix # todo: check locally first
+    - staticcheck # autofix
+    - tagalign # autofix
+    - tagliatelle
+    - testableexamples
+#    - testifylint
+    - testpackage
+    - thelper
+    - tparallel
+    - unconvert
+    - unparam
+    - unqueryvet
+    - unused
+    - usestdlibvars # autofix
+    - usetesting # autofix
+    - varnamelen
+    - wastedassign
+    - whitespace # autofix
+    - wrapcheck
+    - wsl_v5 # [too strict and mostly code is not more readable] add or remove empty lines
+    - zerologlint
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+  settings:
+    errcheck:
+      check-type-assertions: true
+      exclude-functions:
+        - encoding/json.Marshal
+        - encoding/json.MarshalIndent
+#    cyclop:
+#      max-complexity: 20
+#      package-average: 10.0
+#    depguard:
+#      rules:
+#        "deprecated":
+#          files:
+#            - "$all"
+#          deny:
+#            - pkg: github.com/golang/protobuf
+#              desc: Use google.golang.org/protobuf instead, see https://developers.google.com/protocol-buffers/docs/reference/go/faq#modules
+#            - pkg: github.com/satori/go.uuid
+#              desc: Use github.com/google/uuid instead, satori's package is not maintained
+#            - pkg: github.com/gofrs/uuid$
+#              desc: Use github.com/gofrs/uuid/v5 or later, it was not a go module before v5
+#        "non-test files":
+#          files:
+#            - "!$test"
+#          deny:
+#            - pkg: math/rand$
+#              desc: Use math/rand/v2 instead, see https://go.dev/blog/randv2
+#        "non-main files":
+#          files:
+#            - "!**/main.go"
+#          deny:
+#            - pkg: log$ # log is used for ErrorLog in http.Server
+#              desc: Use log/slog instead, see https://go.dev/blog/slog
+    embeddedstructfieldcheck:
+      forbid-mutex: true
+
+
+    exhaustruct:
+#      exclude:
+#        # std libs
+#        - ^net/http.Client$
+#        - ^net/http.Cookie$
+#        - ^net/http.Request$
+#        - ^net/http.Response$
+#        - ^net/http.Server$
+#        - ^net/http.Transport$
+#        - ^net/url.URL$
+#        - ^os/exec.Cmd$
+#        - ^reflect.StructField$
+#        # public libs
+#        - ^github.com/Shopify/sarama.Config$
+#        - ^github.com/Shopify/sarama.ProducerMessage$
+#        - ^github.com/mitchellh/mapstructure.DecoderConfig$
+#        - ^github.com/prometheus/client_golang/.+Opts$
+#        - ^github.com/spf13/cobra.Command$
+#        - ^github.com/spf13/cobra.CompletionOptions$
+#        - ^github.com/stretchr/testify/mock.Mock$
+#        - ^github.com/testcontainers/testcontainers-go.+Request$
+#        - ^github.com/testcontainers/testcontainers-go.FromDockerfile$
+#        - ^golang.org/x/tools/go/analysis.Analyzer$
+#        - ^google.golang.org/protobuf/.+Options$
+#        - ^gopkg.in/yaml.v3.Node$
+      allow-empty-returns: true
+
+    exhaustive:
+      # Program elements to check for exhaustiveness.
+      # Default: [ switch ]
+      check:
+        - switch
+        - map
+    errchkjson:
+      check-error-free-encoding: true
+    funcorder:
+      struct-method: false
+    funlen:
+      lines: 100
+      statements: 50
+    gochecksumtype:
+      default-signifies-exhaustive: false
+    goconst:
+      min-occurrences: 4
+    varnamelen:
+      min-name-length: 1
+    misspell:
+      ignore-rules:
+        - Nominet
+    revive:
+      enable-all-rules: true
+      rules:
+        - arguments:
+            - allowInts: "0,1,2,3,4,5,6,7,8,9,10,16,20,22,32,64,80,128,255,443,8080"
+              allowStrs: '""'
+              maxLitCount: "10"
+          disabled: true
+          name: add-constant
+          severity: warning
+        - arguments:
+            - 6
+          name: argument-limit
+          severity: warning
+        - name: atomic
+          severity: warning
+        - name: bare-return
+          severity: warning
+        - name: bool-literal-in-expr
+          severity: warning
+        - arguments:
+            - 40
+          disabled: true
+          name: cognitive-complexity
+        - arguments:
+            - "nolint:"
+            - 'lint:ignore"'
+            - "exhaustive:ignore"
+            - "codespell:ignore"
+          disabled: false
+          name: comment-spacings
+        - name: confusing-naming
+          severity: warning
+        - name: confusing-results
+          severity: warning
+        - name: constant-logical-expr
+          severity: error
+        - name: context-as-argument
+          severity: error
+        - name: context-keys-type
+          severity: error
+        - arguments:
+            - 50
+          disabled: true
+          name: cyclomatic
+        - name: deep-exit
+          severity: warning
+        - name: defer
+          severity: warning
+        - name: early-return
+          severity: warning
+        - name: empty-block
+          severity: error
+        - name: empty-lines
+          severity: warning
+        - name: enforce-switch-style
+          disabled: true
+        - name: error-naming
+          severity: error
+        - name: error-return
+          severity: error
+        - name: error-strings
+          severity: error
+        - name: errorf
+          severity: warning
+        - name: exported
+          severity: error
+        - name: flag-parameter
+          severity: warning
+        - arguments:
+            - 4
+          name: function-result-limit
+          severity: warning
+        - arguments:
+            - 50
+            - 0
+          name: function-length
+          severity: warning
+          disabled: true
+        - name: get-return
+          severity: error
+        - name: identical-branches
+          severity: error
+        - name: if-return
+          severity: warning
+        - name: increment-decrement
+          severity: error
+        - name: indent-error-flow
+          severity: warning
+        - name: import-shadowing
+          severity: warning
+        - disabled: true
+          name: line-length-limit
+        - arguments:
+            - 10
+          disabled: true
+          name: max-public-structs
+        - name: modifies-parameter
+          severity: warning
+        - name: modifies-value-receiver
+          severity: warning
+        - name: nested-structs
+          severity: warning
+        - name: optimize-operands-order
+          severity: warning
+        - name: package-comments
+          severity: warning
+        - name: range
+          severity: warning
+        - name: range-val-in-closure
+          severity: warning
+        - name: range-val-address
+          severity: warning
+        - name: receiver-naming
+          severity: warning
+        - name: redefines-builtin-id
+          severity: error
+        - name: string-of-int
+          severity: warning
+        - name: struct-tag
+          severity: warning
+        - name: superfluous-else
+          severity: warning
+        - name: time-equal
+          severity: warning
+        - name: time-naming
+          severity: warning
+        - name: var-declaration
+          severity: warning
+        - name: var-naming
+          severity: warning
+        - name: unconditional-recursion
+          severity: error
+        - name: unexported-naming
+          severity: warning
+        - name: unexported-return
+          severity: error
+        - arguments:
+            - fmt.Print
+            - fmt.Printf
+            - fmt.Println
+            - fmt.Fprint
+            - fmt.Fprintf
+            - fmt.Fprintln
+          name: unhandled-error
+          severity: warning
+        - name: unnecessary-stmt
+          severity: warning
+        - name: unreachable-code
+          severity: warning
+        - name: unused-parameter
+          severity: warning
+        - disabled: true
+          name: unused-receiver
+          severity: warning
+        - name: use-any
+          severity: warning
+        - name: useless-break
+          severity: warning
+        - name: waitgroup-by-value
+          severity: warning
+
+run:
+  allow-parallel-runners: true
