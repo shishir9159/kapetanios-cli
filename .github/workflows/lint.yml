@@ -50,4 +50,3 @@ jobs:
           only-new-issues: true
           skip-cache: true
           problem-matchers: true
-          args: --config=.golangci.yml --issues-exit-code=0
