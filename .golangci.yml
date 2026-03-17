@@ -10,8 +10,8 @@ formatters:
     - gofumpt
   settings:
     goimports:
-#      local-prefixes:
-#        - github.com/nikoksr/assert-go
+    #      local-prefixes:
+    #        - github.com/nikoksr/assert-go
     golines:
       max-len: 220
   exclusions:
@@ -31,11 +31,11 @@ linters:
     - containedctx
     - contextcheck
     - copyloopvar # autofix
-#    - cyclop
+    #    - cyclop
     - decorder
     - dogsled
-#    - depguard
-#    - dupl # hard to avoid for the current test suite
+    #    - depguard
+    #    - dupl # hard to avoid for the current test suite
     - dupword # autofix
     - durationcheck
     - embeddedstructfieldcheck
@@ -44,29 +44,29 @@ linters:
     - errchkjson
     - errname
     - errorlint # autofix
-#    - exhaustruct
+    #    - exhaustruct
     - exhaustive # autofix
     - exptostd
     - fatcontext # autofix
     - forbidigo
     - forcetypeassert
     - funcorder
-#    - funlen # remove check for tests
-#    - ginkgolinter
+    #    - funlen # remove check for tests
+    #    - ginkgolinter
     - gocheckcompilerdirectives
-#    - gochecknoglobals # context key are global
-#    - gochecknoinits
-#    - gocognit # check value and set to 20 instead of default 10
+    #    - gochecknoglobals # context key are global
+    #    - gochecknoinits
+    #    - gocognit # check value and set to 20 instead of default 10
     - gochecksumtype
     - goconst
     - gocritic # autofix
-#    - gocyclo # how is different from cyclop?
+    #    - gocyclo # how is different from cyclop?
     - godoclint
     - godot
-#    - godox # should all todos be done before merge?
+    #    - godox # should all todos be done before merge?
     - goheader # autofix
     - gomoddirectives
-#    - gomodguard- # how is different from depguard?
+    #    - gomodguard- # how is different from depguard?
     - goprintffuncname
     - gosec
     - gosmopolitan
@@ -96,7 +96,7 @@ linters:
     - nilnil
     - nlreturn # autofix
     - noctx
-#    - noinlineerr
+    #    - noinlineerr
     - nolintlint # autofix
     - nonamedreturns
     - nosprintfhostport
@@ -110,14 +110,14 @@ linters:
     - recvcheck
     - revive # TODO: read all rules and hand pick them for settings
     - rowserrcheck
-#    - sloglint # autofix
+    #    - sloglint # autofix
     - spancheck
     - sqlclosecheck # autofix # todo: check locally first
     - staticcheck # autofix
     - tagalign # autofix
     - tagliatelle
     - testableexamples
-#    - testifylint
+    #    - testifylint
     - testpackage
     - thelper
     - tparallel
@@ -150,62 +150,62 @@ linters:
       exclude-functions:
         - encoding/json.Marshal
         - encoding/json.MarshalIndent
-#    cyclop:
-#      max-complexity: 20
-#      package-average: 10.0
-#    depguard:
-#      rules:
-#        "deprecated":
-#          files:
-#            - "$all"
-#          deny:
-#            - pkg: github.com/golang/protobuf
-#              desc: Use google.golang.org/protobuf instead, see https://developers.google.com/protocol-buffers/docs/reference/go/faq#modules
-#            - pkg: github.com/satori/go.uuid
-#              desc: Use github.com/google/uuid instead, satori's package is not maintained
-#            - pkg: github.com/gofrs/uuid$
-#              desc: Use github.com/gofrs/uuid/v5 or later, it was not a go module before v5
-#        "non-test files":
-#          files:
-#            - "!$test"
-#          deny:
-#            - pkg: math/rand$
-#              desc: Use math/rand/v2 instead, see https://go.dev/blog/randv2
-#        "non-main files":
-#          files:
-#            - "!**/main.go"
-#          deny:
-#            - pkg: log$ # log is used for ErrorLog in http.Server
-#              desc: Use log/slog instead, see https://go.dev/blog/slog
+    #    cyclop:
+    #      max-complexity: 20
+    #      package-average: 10.0
+    #    depguard:
+    #      rules:
+    #        "deprecated":
+    #          files:
+    #            - "$all"
+    #          deny:
+    #            - pkg: github.com/golang/protobuf
+    #              desc: Use google.golang.org/protobuf instead, see https://developers.google.com/protocol-buffers/docs/reference/go/faq#modules
+    #            - pkg: github.com/satori/go.uuid
+    #              desc: Use github.com/google/uuid instead, satori's package is not maintained
+    #            - pkg: github.com/gofrs/uuid$
+    #              desc: Use github.com/gofrs/uuid/v5 or later, it was not a go module before v5
+    #        "non-test files":
+    #          files:
+    #            - "!$test"
+    #          deny:
+    #            - pkg: math/rand$
+    #              desc: Use math/rand/v2 instead, see https://go.dev/blog/randv2
+    #        "non-main files":
+    #          files:
+    #            - "!**/main.go"
+    #          deny:
+    #            - pkg: log$ # log is used for ErrorLog in http.Server
+    #              desc: Use log/slog instead, see https://go.dev/blog/slog
     embeddedstructfieldcheck:
       forbid-mutex: true
 
 
     exhaustruct:
-#      exclude:
-#        # std libs
-#        - ^net/http.Client$
-#        - ^net/http.Cookie$
-#        - ^net/http.Request$
-#        - ^net/http.Response$
-#        - ^net/http.Server$
-#        - ^net/http.Transport$
-#        - ^net/url.URL$
-#        - ^os/exec.Cmd$
-#        - ^reflect.StructField$
-#        # public libs
-#        - ^github.com/Shopify/sarama.Config$
-#        - ^github.com/Shopify/sarama.ProducerMessage$
-#        - ^github.com/mitchellh/mapstructure.DecoderConfig$
-#        - ^github.com/prometheus/client_golang/.+Opts$
-#        - ^github.com/spf13/cobra.Command$
-#        - ^github.com/spf13/cobra.CompletionOptions$
-#        - ^github.com/stretchr/testify/mock.Mock$
-#        - ^github.com/testcontainers/testcontainers-go.+Request$
-#        - ^github.com/testcontainers/testcontainers-go.FromDockerfile$
-#        - ^golang.org/x/tools/go/analysis.Analyzer$
-#        - ^google.golang.org/protobuf/.+Options$
-#        - ^gopkg.in/yaml.v3.Node$
+      #      exclude:
+      #        # std libs
+      #        - ^net/http.Client$
+      #        - ^net/http.Cookie$
+      #        - ^net/http.Request$
+      #        - ^net/http.Response$
+      #        - ^net/http.Server$
+      #        - ^net/http.Transport$
+      #        - ^net/url.URL$
+      #        - ^os/exec.Cmd$
+      #        - ^reflect.StructField$
+      #        # public libs
+      #        - ^github.com/Shopify/sarama.Config$
+      #        - ^github.com/Shopify/sarama.ProducerMessage$
+      #        - ^github.com/mitchellh/mapstructure.DecoderConfig$
+      #        - ^github.com/prometheus/client_golang/.+Opts$
+      #        - ^github.com/spf13/cobra.Command$
+      #        - ^github.com/spf13/cobra.CompletionOptions$
+      #        - ^github.com/stretchr/testify/mock.Mock$
+      #        - ^github.com/testcontainers/testcontainers-go.+Request$
+      #        - ^github.com/testcontainers/testcontainers-go.FromDockerfile$
+      #        - ^golang.org/x/tools/go/analysis.Analyzer$
+      #        - ^google.golang.org/protobuf/.+Options$
+      #        - ^gopkg.in/yaml.v3.Node$
       allow-empty-returns: true
 
     exhaustive:
