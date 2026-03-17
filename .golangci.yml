@@ -10,8 +10,8 @@ formatters:
     - gofumpt
   settings:
     goimports:
-    #      local-prefixes:
-    #        - github.com/nikoksr/assert-go
+      local-prefixes:
+        - github.com/nikoksr/assert-go
     golines:
       max-len: 220
   exclusions:
